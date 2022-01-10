@@ -1,0 +1,2 @@
+# Musicious
+Discord Music Bot
