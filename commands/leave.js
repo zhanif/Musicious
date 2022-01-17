@@ -22,7 +22,7 @@ module.exports = {
         try
         {
             if (!message.guild.me.voice.channel) return message.channel.send(`The bot doesn't join any voice channel!`);
-            client.distube.voices.leave();
+            client.distube.voices.leave(message.guild);
             message.react('👋');
         }
         catch (err)
