@@ -23,5 +23,5 @@ DEV_CHANNEL=''
 Fill it in based on your own bot configuration.
 
 ### **Link**
-Support Server: https://discord.gg/UDSSGat9Kj\
-Bot Invitation: https://discord.com/api/oauth2/authorize?client_id=931014951500390540&permissions=137505293120&scope=bot
+- Support Server: https://discord.gg/UDSSGat9Kj
+- Bot Invitation: https://discord.com/api/oauth2/authorize?client_id=931014951500390540&permissions=137505293120&scope=bot
