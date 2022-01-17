@@ -18,7 +18,7 @@ module.exports = {
             let command = client.commands.get(cmd.toLowerCase()) || client.commands.get(client.aliases.get(cmd.toLowerCase()));
             if (!command) return;
             if (command.reqVoice && !message.member.voice.channel) return message.channel.send(`You must join the voice channel first!`);
-            if (command.reqVoice && message.guild.me.voice.channel != message.member.voice.channel) return message.channel.send(`You must join the same voice channel first!`);
+            if (command.reqVoice && message.guild.me.voice.channel && message.guild.me.voice.channel != message.member.voice.channel) return message.channel.send(`You must join the same voice channel first!`);
             if (command.min_args > args.length) return message.channel.send(`Incomplete arguments, please try again!`);
             if (
                 command.permission.user.length == 0 ||
