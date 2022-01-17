@@ -1,0 +1,11 @@
+const { Client } = require("discord.js");
+
+module.exports = {
+    name: 'debug',
+    /**
+     * @param {Client} client
+     */
+    run: async(client, error) => {
+        return console.log(`Debug: ${error}`);
+    }
+};
