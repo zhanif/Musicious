@@ -1,4 +1,5 @@
 const { Client, Message } = require("discord.js");
+const { writeLog } = require("../logger");
 
 module.exports = {
     name: 'jump',
@@ -28,11 +29,7 @@ module.exports = {
         }
         catch (err)
         {
-            if (err.toUpperCase().contains('NO_SONG_POSITION'))
-            {
-                return message.channel.send(`There is no previous song!`);
-            }
-            console.log(`Error: ${err}`);            
+            writeLog(err);
         }
     }
 };

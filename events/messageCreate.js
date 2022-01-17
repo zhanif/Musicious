@@ -1,4 +1,5 @@
 const { Client, Message } = require("discord.js");
+const { writeLog } = require("../logger");
 
 module.exports = {
     name: 'messageCreate',
@@ -28,7 +29,7 @@ module.exports = {
             )
             {
                 if (command.dev_only && message.author.id != client.dev_id) return;
-                if (command.dev_only) console.log(`Warn: Developer command (${command.name}) has been used!`);
+                if (command.dev_only) writeLog(`Warn: Developer command (${command.name}) has been used by ${message.author.tag} (ID: ${message.author.id})!`);
                 return command.run(client, message, args);
             }
             else
@@ -59,7 +60,7 @@ module.exports = {
         }
         catch (err)
         {
-            console.log(`Error: ${err}`);
+            writeLog(err);
         }
     }
 };

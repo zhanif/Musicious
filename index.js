@@ -5,6 +5,7 @@ const { SpotifyPlugin } = require('@distube/spotify');
 const { SoundCloudPlugin } = require('@distube/soundcloud');
 const { keepAlive } = require('./server');
 const fs = require('fs');
+const { writeLog } = require('./logger');
 
 const client = new Client({
     intents: 32767
@@ -63,7 +64,7 @@ client.distube
     })
     .on('error', (channel, err) => {
         channel.send(`No result found!`);
-        console.log(`Error: ${err}`);
+        writeLog(err);
     })
 
 client.login(client.token);

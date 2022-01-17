@@ -1,4 +1,5 @@
 const { Client, Message } = require("discord.js");
+const { writeLog } = require("../logger");
 
 module.exports = {
     name: 'songinfo',
@@ -26,7 +27,7 @@ module.exports = {
         }
         catch (err)
         {
-            console.log(`Error: ${err}`);
+            writeLog(err);
         }
     }
 };
