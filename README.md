@@ -1,5 +1,5 @@
 ## **Musicious**
-Musicious is a Discord music bot that has the ability to play music on certain platforms such as YouTube, Spotify, and Soundcloud.
+Musicious is a Discord music bot that has the ability to play music or playlist from the certain platforms such as YouTube, Spotify, and Soundcloud.
 
 This project is licensed under the MIT license. For more information: [click here](https://github.com/Zlarex/Musicious/blob/main/LICENSE)
 
