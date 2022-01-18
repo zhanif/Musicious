@@ -20,6 +20,7 @@ DEV_ID=''
 DEV_GUILD=''
 DEV_CHANNEL=''
 DROPBOX_TOKEN=''
+YTCOOKIE=''
 ```
 Fill it in based on your own bot configuration.
 

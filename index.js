@@ -24,6 +24,7 @@ client.distube = new DisTube(client, {
     emitNewSongOnly: true,
     youtubeDL: false,
     updateYouTubeDL: false,
+    youtubeCookie: process.env.YTCOOKIE,
     plugins: [new SpotifyPlugin(), new SoundCloudPlugin()]
 })
 
