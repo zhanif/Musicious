@@ -64,7 +64,7 @@ client.distube
         message.channel.send(`No result found!`);
     })
     .on('error', (channel, err) => {
-        channel.send(`No result found!`);
+        channel.send('\`\`\`diff\n- Error:\n' + err.message.replace('`', '') + '\n\`\`\`');
         writeLog(err);
     })
 

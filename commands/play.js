@@ -24,7 +24,7 @@ module.exports = {
             let query = args.join(' ');
             client.distube.play(message.member.voice.channel, query, {
                 member: message.member,
-                textChannel:  message.channel,
+                textChannel: message.channel,
                 message
             });
             await message.react('🔍');

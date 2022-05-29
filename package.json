@@ -28,9 +28,12 @@
     "express": "^4.17.2",
     "ffmpeg-static": "^4.4.1",
     "fs": "^0.0.1-security",
+    "genius-lyrics": "^4.3.8",
     "libsodium-wrappers": "^0.7.9",
     "node-gyp": "^8.4.1",
+    "node-opus": "^0.3.3",
     "node-pre-gyp": "^0.17.0",
+    "opusscript": "^0.0.8",
     "ytdl-core": "^4.10.0"
   },
   "keywords": [],
