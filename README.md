@@ -26,4 +26,4 @@ Fill it in based on your own bot configuration.
 
 ### **Link**
 - Support Server: [Click Here](https://discord.gg/UDSSGat9Kj)
-- Bot Invitation: [Click Here](https://discord.com/api/oauth2/authorize?client_id=931014951500390540&permissions=137505293120&scope=bot)
+- Bot Invitation: [Click Here](https://discord.com/api/oauth2/authorize?client_id=931014951500390540&permissions=137505397056&scope=bot)
