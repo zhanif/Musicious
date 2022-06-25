@@ -58,10 +58,10 @@ client.distube
         queue.textChannel.send(`🎶・\`${song.name}\` - ${song.formattedDuration}`);
     })
     .on('addList', (queue, playlist) => {
-        queue.textChannel.send(`🔥・\`${playlist.songs.length}\` songs has been added!`);
+        queue.textChannel.send(`🔥・ Playlist has been loaded!`);
     })
     .on('searchNoResult', (message, query) => {
-        message.channel.send(`No result found!`);
+        message.channel.send(`🔎・ No result found!`);
     })
     .on('error', (channel, err) => {
         channel.send('\`\`\`diff\n- Error:\n' + err.message.replace('`', '') + '\n\`\`\`');

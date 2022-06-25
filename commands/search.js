@@ -22,7 +22,7 @@ module.exports = {
         try
         {
             let searchRes = await client.distube.search(args.join(' '), {
-                limit: 10,
+                limit: 15,
                 type: 'video',
                 safeSearch: true,
             }).catch(() => {});
@@ -32,12 +32,12 @@ module.exports = {
                 resStr.push(`${(i + 1)}. ${s.name} - ${s.formattedDuration}`);
             });
 
-            const msg = await message.channel.send(`🔍・Search Result:\n\`\`\`md\n#. Showing ${resStr.length} songs...\n0. Cancel\n${resStr.join('\n')}\n\n[Type a number](1-${resStr.length} | 0)\n\`\`\``);
+            const msg = await message.channel.send(`🔍・Search Result:\n\`\`\`md\n#. Showing ${resStr.length} songs...\n0. Cancel\n${resStr.join('\n').replace('`', '')}\n\n[Type a number](1-${resStr.length} | 0)\n\`\`\``);
             const filter = (m) => {
                 return !isNaN(Number(m.content)) && Number(m.content) >= 0 && Number(m.content) <= searchRes.length;
             }
             await msg.react('⏳');
-            const collector = message.channel.createMessageCollector({filter, time: 15_000});
+            const collector = message.channel.createMessageCollector({filter, time: 20_000});
             collector.on('collect', m => {
                 let pos = Number(m.content) - 1;
                 if (pos >= 0)
