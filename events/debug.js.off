@@ -1,4 +1,4 @@
-const { Client } = require("discord.js");
+const { Client } = require("discord.js")
 
 module.exports = {
     name: 'debug',
@@ -6,6 +6,6 @@ module.exports = {
      * @param {Client} client
      */
     run: async(client, error) => {
-        return console.log(`Debug: ${error}`);
+        return console.log(`Debug: ${error}`)
     }
-};
+}

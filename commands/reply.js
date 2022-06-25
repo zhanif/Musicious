@@ -1,5 +1,5 @@
-const { Client, Message, MessageEmbed } = require("discord.js");
-const { writeLog } = require("../logger");
+const { Client, Message, MessageEmbed } = require("discord.js")
+const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'reply',
@@ -21,27 +21,27 @@ module.exports = {
     run: async(client, message, args) => {
         try
         {
-            let msgid = args.shift();
-            let mesg = args.join(' ');
-            let msg = await client.guilds.cache.get(client.dev_guild).channels.cache.get(client.dev_channel).messages.fetch(msgid);
-            let embedId = msg.embeds[0];
+            let msgid = args.shift()
+            let mesg = args.join(' ')
+            let msg = await client.guilds.cache.get(client.dev_guild).channels.cache.get(client.dev_channel).messages.fetch(msgid)
+            let embedId = msg.embeds[0]
             const embed = new MessageEmbed()
             .setDescription(embedId.description)
             .setAuthor(embedId.author)
             .setFooter(embedId.footer)
             .setColor(3338095)
             .addField(`Response`, mesg)
-            .setImage(`https://i.stack.imgur.com/Fzh0w.png`);
+            .setImage(`https://i.stack.imgur.com/Fzh0w.png`)
             await client.guilds.cache.get(client.dev_guild).channels.cache.get(client.dev_channel).messages.cache.get(msgid).edit({embeds: [embed]})
-            await message.react('☑️');
-            // let authorId = embed.author.name.split('(#')[1];
-            // authorId = authorId.substring(0, authorId.length - 1);
-            // let repTarget = await client.users.fetch(authorId);
-            // repTarget.send(`📬・Your report has been responded!\n\`\`\`${mesg}\n\`\`\``);
+            await message.react('☑️')
+            // let authorId = embed.author.name.split('(#')[1]
+            // authorId = authorId.substring(0, authorId.length - 1)
+            // let repTarget = await client.users.fetch(authorId)
+            // repTarget.send(`📬・Your report has been responded!\n\`\`\`${mesg}\n\`\`\``)
         }
         catch (err)
         {
-            writeLog(err);
+            writeLog(err)
         }
     }
-};
+}

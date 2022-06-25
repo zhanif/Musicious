@@ -1,5 +1,5 @@
-const { Client, Message } = require("discord.js");
-const { writeLog } = require("../logger");
+const { Client, Message } = require("discord.js")
+const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'next',
@@ -21,15 +21,15 @@ module.exports = {
     run: async(client, message, args) => {
         try
         {
-            let queue = client.distube.getQueue(message);
-            if (!queue) return message.channel.send(`The queue is empty!`);
-            if (queue.songs.length - 1 <= 0) return message.channel.send(`No next song found!`);
-            await queue.skip();
-            message.react('⏩');
+            let queue = client.distube.getQueue(message)
+            if (!queue) return message.channel.send(`The queue is empty!`)
+            if (queue.songs.length - 1 <= 0) return message.channel.send(`No next song found!`)
+            await queue.skip()
+            message.react('⏩')
         }
         catch (err)
         {
-            writeLog(err);
+            writeLog(err)
         }
     }
-};
+}

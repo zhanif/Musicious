@@ -1,5 +1,5 @@
-const { Client, Message } = require("discord.js");
-const { writeLog } = require("../logger");
+const { Client, Message } = require("discord.js")
+const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'remove',
@@ -21,16 +21,16 @@ module.exports = {
     run: async(client, message, args) => {
         try
         {
-            let queue = client.distube.getQueue(message);
-            if (!queue) return message.channel.send(`The queue is empty!`);
-            let pos = Number(args[0]);
-            if (isNaN(pos) || pos <= 0 || pos > queue.songs.length - 1) return message.channel.send(`Invalid track position!`);
-            queue.songs.splice(pos, 1);
-            message.react('☑');
+            let queue = client.distube.getQueue(message)
+            if (!queue) return message.channel.send(`The queue is empty!`)
+            let pos = Number(args[0])
+            if (isNaN(pos) || pos <= 0 || pos > queue.songs.length - 1) return message.channel.send(`Invalid track position!`)
+            queue.songs.splice(pos, 1)
+            message.react('☑')
         }
         catch (err)
         {
-            writeLog(err);
+            writeLog(err)
         }
     }
-};
+}

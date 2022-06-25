@@ -1,5 +1,5 @@
-const { Client, Message } = require("discord.js");
-const { writeLog } = require("../logger");
+const { Client, Message } = require("discord.js")
+const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'ping',
@@ -21,15 +21,15 @@ module.exports = {
         try
         {
             message.channel.send('Receiving...').then(msg => {
-                let createdAt = msg.createdAt - message.createdAt;
-                let websocketAt = client.ws.ping;
-                let editedMessage =  `:signal_strength: API: \`${createdAt}\` ms | WebSocket: \`${websocketAt}\` ms`;
-                msg.edit(editedMessage);
-            });
+                let createdAt = msg.createdAt - message.createdAt
+                let websocketAt = client.ws.ping
+                let editedMessage =  `:signal_strength: API: \`${createdAt}\` ms | WebSocket: \`${websocketAt}\` ms`
+                msg.edit(editedMessage)
+            })
         }
         catch (err)
         {
-            writeLog(err);
+            writeLog(err)
         }
     }
-};
+}

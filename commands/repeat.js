@@ -1,5 +1,5 @@
-const { Client, Message } = require("discord.js");
-const { writeLog } = require("../logger");
+const { Client, Message } = require("discord.js")
+const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'repeat',
@@ -21,35 +21,35 @@ module.exports = {
     run: async(client, message, args) => {
         try
         {
-            let queue = client.distube.getQueue(message);
-            if (!queue) return message.channel.send(`The queue is empty!`);
-            let mode = 2;
+            let queue = client.distube.getQueue(message)
+            if (!queue) return message.channel.send(`The queue is empty!`)
+            let mode = 2
             if (args[0])
             {
                 switch (args[0].toLowerCase()) {
                 case 'off':
-                    mode = 0;
-                    break;
+                    mode = 0
+                    break
                 case 's':
                 case 'song':
-                    mode = 1;
-                    break;
+                    mode = 1
+                    break
                 case 'q':
                 case 'queue':
-                    mode = 2;
-                break;
+                    mode = 2
+                break
                 default:
-                    mode = -1;
-                    break;
+                    mode = -1
+                    break
                 }
             }
-            if (mode == -1) return message.channel.send(`Invalid repeat mode!`);
-            queue.setRepeatMode(mode);
-            message.react((mode == 0)? '➡️' : '🔁');
+            if (mode == -1) return message.channel.send(`Invalid repeat mode!`)
+            queue.setRepeatMode(mode)
+            message.react((mode == 0)? '➡️' : '🔁')
         }
         catch (err)
         {
-            writeLog(err);
+            writeLog(err)
         }
     }
-};
+}

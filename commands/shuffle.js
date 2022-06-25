@@ -1,5 +1,5 @@
-const { Client, Message } = require("discord.js");
-const { writeLog } = require("../logger");
+const { Client, Message } = require("discord.js")
+const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'shuffle',
@@ -21,12 +21,12 @@ module.exports = {
     run: async(client, message, args) => {
         try
         {
-            client.distube.shuffle(message);
-            await message.react('🔀');
+            client.distube.shuffle(message)
+            await message.react('🔀')
         }
         catch (err)
         {
-            writeLog(err);
+            writeLog(err)
         }
     }
-};
+}

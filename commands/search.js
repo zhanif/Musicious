@@ -1,5 +1,5 @@
-const { Client, Message } = require("discord.js");
-const { writeLog } = require("../logger");
+const { Client, Message, MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton } = require("discord.js")
+const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'search',
@@ -21,44 +21,106 @@ module.exports = {
     run: async(client, message, args) => {
         try
         {
+            await message.react('🔍')
             let searchRes = await client.distube.search(args.join(' '), {
                 limit: 15,
                 type: 'video',
                 safeSearch: true,
-            }).catch(() => {});
-            if (!searchRes) return message.channel.send(`No result found!`);
-            let resStr = [];
+            }).catch(() => {})
+            if (!searchRes) return message.channel.send(`No result found!`)
+            let resStr = []
             searchRes.forEach((s, i) => {
-                resStr.push(`${(i + 1)}. ${s.name} - ${s.formattedDuration}`);
-            });
+                resStr.push({
+                    label: s.name,
+                    description: `Duration: ${s.formattedDuration} - Uploaded by: ${s.uploader.name}`,
+                    value: `${i + 1}`,
+                    emoji: `🎵`
+                })
+            })
 
-            const msg = await message.channel.send(`🔍・Search Result:\n\`\`\`md\n#. Showing ${resStr.length} songs...\n0. Cancel\n${resStr.join('\n').replace('`', '')}\n\n[Type a number](1-${resStr.length} | 0)\n\`\`\``);
-            const filter = (m) => {
-                return !isNaN(Number(m.content)) && Number(m.content) >= 0 && Number(m.content) <= searchRes.length;
-            }
-            await msg.react('⏳');
-            const collector = message.channel.createMessageCollector({filter, time: 20_000});
-            collector.on('collect', m => {
-                let pos = Number(m.content) - 1;
-                if (pos >= 0)
-                {
-                    client.distube.play(message.member.voice.channel, searchRes[pos].url, {
+            const row = new MessageActionRow()
+            .addComponents(
+                new MessageSelectMenu()
+                .setCustomId('select_song')
+                .setPlaceholder(`Select the song`)
+                .addOptions(resStr)
+            )
+
+            const row2 = new MessageActionRow()
+            .addComponents(
+                new MessageButton()
+                .setCustomId('cancel_button')
+                .setLabel('Cancel')
+                .setStyle('DANGER')
+            )
+            const embed = new MessageEmbed()
+            .setColor('#202226')
+            .setDescription(`⏳ You have 30 seconds to select the song`)
+
+            const msg = await message.channel.send({
+                embeds: [embed],
+                components: [row, row2]
+            })
+
+            const collector1 = message.channel.createMessageComponentCollector({
+                componentType: 'BUTTON',
+                max: 1,
+                time: 30_000
+            })
+
+            const collector2 = message.channel.createMessageComponentCollector({
+                componentType: 'SELECT_MENU',
+                max: 1,
+                time: 30_000
+            })
+
+            collector1.on('collect', async collected => {
+                if (collected.customId == 'cancel_button') {
+                    const cancelEmbed = new MessageEmbed()
+                    .setColor(`RED`)
+                    .setDescription(`❌ You cancelled the search menu`)
+                    collected.reply({
+                        embeds: [cancelEmbed],
+                        ephemeral: true
+                    })
+                    collector2.stop('success')
+                }
+            })
+
+            collector2.on('collect', async collected => {
+                if (collected.customId == 'select_song') {
+                    let value = Number(collected.values[0]) - 1
+                    client.distube.play(message.member.voice.channel, searchRes[value].url, {
                         member: message.member,
                         textChannel: message.channel,
                         message
-                    });
+                    })
+                    const embed = new MessageEmbed()
+                    .setColor('#202226')
+                    .setDescription(`☑ [${searchRes[value].name}](${searchRes[value].url})`)
+                    collected.reply({
+                        embeds: [embed],
+                        ephemeral: true
+                    })
+                    collector1.stop('success')
                 }
-                m.react('☑️');
-                collector.stop();
             })
-            collector.on('end', m => {
-                msg.reactions.removeAll();
-                msg.edit(`🔍・Search Result:\n\`\`\`md\n#. Showing ${resStr.length} songs...\n${resStr.join('\n')}\n\`\`\``);
+            
+            collector1.on('end', async (m, reason) => {
+                setTimeout(() => {
+                    msg.delete().catch(() => {})
+                }, 5000)
+            })
+
+            collector2.on('end', async (m, reason) => {
+                setTimeout(() => {
+                    msg.delete().catch(() => {})
+                }, 5000)
             })
         }
         catch (err)
         {
-            writeLog(err);
+            writeLog(err)
         }
     }
-};
+}

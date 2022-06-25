@@ -1,5 +1,5 @@
-const { Client, Message } = require("discord.js");
-const { writeLog } = require("../logger");
+const { Client, Message } = require("discord.js")
+const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'leave',
@@ -21,13 +21,13 @@ module.exports = {
     run: async(client, message, args) => {
         try
         {
-            if (!message.guild.me.voice.channel) return message.channel.send(`The bot doesn't join any voice channel!`);
-            client.distube.voices.leave(message.guild);
-            message.react('👋');
+            if (!message.guild.me.voice.channel) return message.channel.send(`The bot doesn't join any voice channel!`)
+            client.distube.voices.leave(message.guild)
+            message.react('👋')
         }
         catch (err)
         {
-            writeLog(err);
+            writeLog(err)
         }
     }
-};
+}

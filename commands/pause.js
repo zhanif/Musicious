@@ -1,5 +1,5 @@
-const { Client, Message } = require("discord.js");
-const { writeLog } = require("../logger");
+const { Client, Message } = require("discord.js")
+const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'pause',
@@ -21,14 +21,14 @@ module.exports = {
     run: async(client, message, args) => {
         try
         {
-            let queue = client.distube.getQueue(message);
-            if (!queue) return message.channel.send(`The queue is empty!`);
-            queue.pause();
-            message.react('⏸');
+            let queue = client.distube.getQueue(message)
+            if (!queue) return message.channel.send(`The queue is empty!`)
+            queue.pause()
+            message.react('⏸')
         }
         catch (err)
         {
-            writeLog(err);
+            writeLog(err)
         }
     }
-};
+}

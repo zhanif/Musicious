@@ -1,5 +1,5 @@
-const { Client, Message } = require("discord.js");
-const { writeLog } = require("../logger");
+const { Client, Message } = require("discord.js")
+const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'play',
@@ -21,17 +21,17 @@ module.exports = {
     run: async(client, message, args) => {
         try
         {
-            let query = args.join(' ');
+            let query = args.join(' ')
             client.distube.play(message.member.voice.channel, query, {
                 member: message.member,
                 textChannel: message.channel,
                 message
-            });
-            await message.react('🔍');
+            })
+            await message.react('🔍')
         }
         catch (err)
         {
-            writeLog(err);
+            writeLog(err)
         }
     }
-};
+}

@@ -1,5 +1,5 @@
-const { Client, Message } = require("discord.js");
-const { writeLog } = require("../logger");
+const { Client, Message } = require("discord.js")
+const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'songinfo',
@@ -20,14 +20,14 @@ module.exports = {
     run: async(client, message) => {
         try
         {
-            let queue = client.distube.getQueue(message);
-            if (!queue || !queue.playing) return message.channel.send(`Nothing is played!`);
-            let s = queue.songs[0];
-            return message.channel.send(`🎵・Current Song:\n\`\`\`md\n# ${s.name}\n* Duration: ${s.formattedDuration}\n* ${(s.playlist)? `Playlist: ${s.playlist.name} (${s.source})\n* ` : ''}Song URL: \`${s.url}\`\n* Requested by: ${s.user.tag} (ID: ${s.user.id})\`\`\``);
+            let queue = client.distube.getQueue(message)
+            if (!queue || !queue.playing) return message.channel.send(`Nothing is played!`)
+            let s = queue.songs[0]
+            return message.channel.send(`🎵・Current Song:\n\`\`\`md\n# ${s.name}\n* Duration: ${s.formattedDuration}\n* ${(s.playlist)? `Playlist: ${s.playlist.name} (${s.source})\n* ` : ''}Song URL: \`${s.url}\`\n* Requested by: ${s.user.tag} (ID: ${s.user.id})\`\`\``)
         }   
         catch (err)
         {
-            writeLog(err);
+            writeLog(err)
         }
     }
-};
+}

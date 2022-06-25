@@ -1,5 +1,5 @@
-const { Client, Message } = require("discord.js");
-const { writeLog } = require("../logger");
+const { Client, Message } = require("discord.js")
+const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'volume',
@@ -21,17 +21,17 @@ module.exports = {
     run: async(client, message, args) => {
         try
         {
-            let queue = client.distube.getQueue(message);
-            if (!queue) return message.channel.send(`The queue is empty!`);
-            let volume = 50;
-            if (args[0]) volume = Number(args[0]);
-            if (isNaN(volume)) return message.channel.send(`Please specify the volume (0-100)!`);
-            message.react((volume > queue.volume)? '🔊' : '🔉');
-            queue.setVolume(volume);
+            let queue = client.distube.getQueue(message)
+            if (!queue) return message.channel.send(`The queue is empty!`)
+            let volume = 50
+            if (args[0]) volume = Number(args[0])
+            if (isNaN(volume)) return message.channel.send(`Please specify the volume (0-100)!`)
+            message.react((volume > queue.volume)? '🔊' : '🔉')
+            queue.setVolume(volume)
         }
         catch (err)
         {
-            writeLog(err);
+            writeLog(err)
         }
     }
-};
+}

@@ -1,5 +1,5 @@
-const { Client, Message, MessageEmbed } = require("discord.js");
-const { writeLog } = require("../logger");
+const { Client, Message, MessageEmbed } = require("discord.js")
+const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'report',
@@ -21,17 +21,17 @@ module.exports = {
     run: async(client, message, args) => {
         try
         {
-            let legitUser = await client.guilds.cache.get(client.dev_guild).bans.fetch({user: message.member.user}).catch(() => {});
-            if (legitUser) return message.channel.send(`You're not permitted to send the report!`);
+            let legitUser = await client.guilds.cache.get(client.dev_guild).bans.fetch({user: message.member.user}).catch(() => {})
+            if (legitUser) return message.channel.send(`You're not permitted to send the report!`)
 
             const opt = {
                 hourCycle: 'h23', hour: '2-digit', minute: '2-digit', second: '2-digit',
-            };
+            }
             const formatDate = new Intl.DateTimeFormat('en-US', {
                 timeZone: `Asia/Jakarta`, ...opt
-            });
-            const date = new Date();
-            const dateNew = formatDate.format(date);
+            })
+            const date = new Date()
+            const dateNew = formatDate.format(date)
 
             const embed = new MessageEmbed()
             .setDescription(args.join(' '))
@@ -40,12 +40,12 @@ module.exports = {
             .setColor(16722731)
             .setImage(`https://i.stack.imgur.com/Fzh0w.png`)
             client.guilds.cache.get(client.dev_guild).channels.cache.get(client.dev_channel).send({embeds: [embed]}).then(() =>{
-                message.channel.send(`📫・Your report has been sent, visit: https://discord.gg/UDSSGat9Kj to view your report!`);
-            });
+                message.channel.send(`📫・Your report has been sent, visit: https://discord.gg/UDSSGat9Kj to view your report!`)
+            })
         }
         catch (err)
         {
-            writeLog(err);
+            writeLog(err)
         }
     }
-};
+}
