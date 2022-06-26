@@ -153,7 +153,7 @@ client.distube
         }
         catch (err)
         {
-            console.log(err)
+            writeLog(err)
         }
     })
     .on('addList', (queue, playlist) => {
