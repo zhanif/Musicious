@@ -54,21 +54,31 @@ loadCommands = () => {
 loadEvents()
 loadCommands()
 
+client.flushCache = async (queue, serverId) => {
+    try {
+        if (!queue) {
+            queue = {
+                id: serverId
+            }
+        }
+        let channelid = client.cacheServer.get(queue.id)[0]
+        let msgid = client.cacheServer.get(queue.id)[1]
+        let findMsg = await client.guilds.cache.get(queue.id).channels.fetch(channelid)
+        findMsg.messages.fetch(msgid).then(m => {
+            m.edit({content: m.content, components: []})
+            client.cacheServer.delete(queue.id)
+        })
+        .catch(err => {})
+    } catch (err) {
+        // console.log(err)
+    }
+}
+
 client.distube
     .on('playSong', async (queue, song) => {
         try
         {
-            try {
-                let channelid = client.cacheServer.get(queue.id)[0]
-                let msgid = client.cacheServer.get(queue.id)[1]
-                let findMsg = await client.guilds.cache.get(queue.id).channels.fetch(channelid)
-                findMsg.messages.fetch(msgid).then(m => {
-                    m.edit({content: m.content, components: []})
-                    client.cacheServer.delete(queue.id)
-                })
-                .catch(err => {})
-            } catch (error) {}
-       
+            client.flushCache(queue, queue.id)
             let idx = [0, 0, 0, 0, 0]
 
             const row = makeButtons(idx)
@@ -167,22 +177,23 @@ client.distube
         writeLog(err)
     })
 
-client.login(client.token)
-keepAlive()
-
 function makeButtons(idx) {
     let btn_prev = [{value: 'prev', emoji: '⏮', style: 'SECONDARY'}]
     let btn_repeat = [{value:'repeat_off', emoji: '🔁', style:'SECONDARY'}, {value: 'repeat', emoji: '🔁', style:'SUCCESS'}, {value: 'repeat_one', emoji: '🔂', style:'SUCCESS'}]
     let btn_play = [{value: 'play', emoji: '⏸', style:'SECONDARY'}, {value: 'pause', emoji: '▶', style:'PRIMARY'}]
     let btn_stop = [{value: 'stop', emoji: '⏹', style:'SECONDARY'}, {value: 'leave', emoji: '👋', style:'DANGER'}]
     let btn_next = [{value: 'next', emoji: '⏭', style: 'SECONDARY'}]
-    
+
+    let isDisable = false
+    if (idx[3] == 1) isDisable = true
+
     return new MessageActionRow()
     .addComponents(
         new MessageButton()
         .setStyle(btn_prev[idx[0]].style)
         .setCustomId(btn_prev[idx[0]].value)
-        .setEmoji(btn_prev[idx[0]].emoji),
+        .setEmoji(btn_prev[idx[0]].emoji)
+        .setDisabled(isDisable),
         new MessageButton()
         .setStyle(btn_repeat[idx[1]].style)
         .setCustomId(btn_repeat[idx[1]].value)
@@ -190,7 +201,8 @@ function makeButtons(idx) {
         new MessageButton()
         .setStyle(btn_play[idx[2]].style)
         .setCustomId(btn_play[idx[2]].value)
-        .setEmoji(btn_play[idx[2]].emoji),
+        .setEmoji(btn_play[idx[2]].emoji)
+        .setDisabled(isDisable),
         new MessageButton()
         .setStyle(btn_stop[idx[3]].style)
         .setCustomId(btn_stop[idx[3]].value)
@@ -199,6 +211,9 @@ function makeButtons(idx) {
         .setStyle(btn_next[idx[4]].style)
         .setCustomId(btn_next[idx[4]].value)
         .setEmoji(btn_next[idx[4]].emoji)
+        .setDisabled(isDisable)
     )
 }
 
+client.login(client.token)
+keepAlive()

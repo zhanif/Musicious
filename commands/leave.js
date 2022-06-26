@@ -24,6 +24,8 @@ module.exports = {
             if (!message.guild.me.voice.channel) return message.channel.send(`The bot doesn't join any voice channel!`)
             client.distube.voices.leave(message.guild)
             message.react('👋')
+            let queue = client.distube.getQueue(message)
+            client.flushCache(queue, message.guild.id)
         }
         catch (err)
         {
