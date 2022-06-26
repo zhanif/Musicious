@@ -1,4 +1,4 @@
-const { Client, Message, MessageActionRow, MessageSelectMenu, MessageEmbed, MessageButton } = require("discord.js")
+const { Client, Message, MessageActionRow, MessageSelectMenu, MessageButton } = require("discord.js")
 const { writeLog } = require("../logger")
 
 module.exports = {
@@ -53,22 +53,22 @@ module.exports = {
                 .setLabel('Cancel')
                 .setStyle('DANGER')
             )
-            const embed = new MessageEmbed()
-            .setColor('#202226')
-            .setDescription(`⏳ You have 30 seconds to select the song`)
-
             const msg = await message.channel.send({
-                embeds: [embed],
+                content: `⏳・You have 30 seconds to select the song`,
                 components: [row, row2]
             })
 
+            const filter = (interaction) => interaction.user.id == message.author.id
+
             const collector1 = message.channel.createMessageComponentCollector({
+                filter,
                 componentType: 'BUTTON',
                 max: 1,
                 time: 30_000
             })
 
             const collector2 = message.channel.createMessageComponentCollector({
+                filter,
                 componentType: 'SELECT_MENU',
                 max: 1,
                 time: 30_000
@@ -76,11 +76,8 @@ module.exports = {
 
             collector1.on('collect', async collected => {
                 if (collected.customId == 'cancel_button') {
-                    const cancelEmbed = new MessageEmbed()
-                    .setColor(`RED`)
-                    .setDescription(`❌ You cancelled the search menu`)
                     collected.reply({
-                        embeds: [cancelEmbed],
+                        content: `❌・You cancelled to search the song`,
                         ephemeral: true
                     })
                     collector2.stop('success')
@@ -95,11 +92,8 @@ module.exports = {
                         textChannel: message.channel,
                         message
                     })
-                    const embed = new MessageEmbed()
-                    .setColor('#202226')
-                    .setDescription(`☑ [${searchRes[value].name}](${searchRes[value].url})`)
                     collected.reply({
-                        embeds: [embed],
+                        content: `🔄・\`${searchRes[value].name}\` - ${searchRes[value].formattedDuration}`,
                         ephemeral: true
                     })
                     collector1.stop('success')

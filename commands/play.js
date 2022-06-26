@@ -22,6 +22,7 @@ module.exports = {
         try
         {
             let query = args.join(' ')
+            // let totalQueue = client.distube.getQueue(message).songs.length
             client.distube.play(message.member.voice.channel, query, {
                 member: message.member,
                 textChannel: message.channel,
