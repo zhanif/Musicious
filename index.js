@@ -83,7 +83,7 @@ client.flushCache = async (queue, serverId) => {
         })
         .catch(err => {})
     } catch (err) {
-        // console.log(err)
+        writeLog(err)
     }
 }
 
@@ -126,11 +126,11 @@ client.distube
                         queue.resume()
                     }
                     else if (collected.customId == 'repeat_off') {
-                        idx[1] = 1
+                        idx[1] = 2
                         queue.setRepeatMode(1)
                     }
                     else if (collected.customId == 'repeat') {
-                        idx[1] = 2
+                        idx[1] = 1
                         queue.setRepeatMode(2)
                     }
                     else if (collected.customId == 'repeat_one') {

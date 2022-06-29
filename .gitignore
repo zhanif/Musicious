@@ -106,3 +106,5 @@ dist
 .replit
 
 package-lock.json
+
+.vscode/

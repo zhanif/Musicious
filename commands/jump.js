@@ -24,7 +24,7 @@ module.exports = {
             let queue = client.distube.getQueue(message)
             if (!queue) return message.channel.send(`The queue is empty!`)
             let reqPos = Number(args[0])
-            if (isNaN(reqPos) || reqPos <= 0 || reqPos >= queue.songs.length - 1) return message.channel.send(`Invalid track position!`)
+            if (isNaN(reqPos) || reqPos <= 0 || reqPos >= queue.songs.length) return message.channel.send(`Invalid track position!`)
             queue.jump(reqPos)
         }
         catch (err)
