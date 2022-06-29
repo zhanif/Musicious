@@ -1,4 +1,4 @@
-const { Client, Message } = require("discord.js")
+const { Client, Message, Interaction } = require("discord.js")
 const { writeLog } = require("../logger")
 
 module.exports = {
@@ -24,7 +24,7 @@ module.exports = {
             let queue = client.distube.getQueue(message)
             if (!queue) return message.channel.send(`The queue is empty!`)
             queue.stop()
-            message.react('🛑')
+            message.react('⏹')
         }
         catch (err)
         {

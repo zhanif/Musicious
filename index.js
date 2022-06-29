@@ -11,6 +11,7 @@ const client = new Client({
     intents: 32767
 })
 client.commands = new Collection()
+client.interactions = new Collection();
 client.aliases = new Collection()
 client.prefix = process.env.PREFIX
 client.token = process.env.TOKEN
@@ -51,8 +52,20 @@ loadCommands = () => {
         console.log(`Info: Command ready: ${commandFile}`)
     }
 }
+loadInteractions = () => {
+    console.log(`Info: Loading interaction files ...`)
+    const interactionFiles = fs.readdirSync(`./interactions`).filter(f => f.endsWith('.js'))
+    for (const interactionFile of interactionFiles)
+    {
+        const interaction = require(`./interactions/${interactionFile}`)
+        client.interactions.set(interaction.name, interaction)
+        console.log(`Info: Slash Command ready: ${interactionFile}`)
+    }
+}
+
 loadEvents()
 loadCommands()
+loadInteractions()
 
 client.flushCache = async (queue, serverId) => {
     try {
@@ -87,6 +100,8 @@ client.distube
             const collector = queue.textChannel.createMessageComponentCollector({
                 componentType: 'BUTTON'
             })
+
+            console.log(emsg.id)
 
             client.cacheServer.set(queue.id, [emsg.channelId, emsg.id])
 
@@ -214,6 +229,9 @@ function makeButtons(idx) {
         .setDisabled(isDisable)
     )
 }
+
+process.on("uncaughtException", err => writeLog(err));
+process.on("unhandledRejection", (err) => writeLog(err));
 
 client.login(client.token)
 keepAlive()

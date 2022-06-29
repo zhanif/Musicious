@@ -3,7 +3,7 @@ const { writeLog } = require("../logger")
 
 module.exports = {
     name: 'queue',
-    description: 'Show all the song list in the queue',
+    description: 'Shows the songs that are currently queued',
     permission: {
         user: [],
         bot: []

@@ -4,7 +4,7 @@ const dfs = require('dropbox-fs')({
     apiKey: process.env.DROPBOX_TOKEN
 })
 
-const DEBUG = false
+const DEBUG = process.env.DEBUGMODE
 
 var utility = module.exports = {
     getOutputTime: () => {
@@ -29,12 +29,12 @@ var utility = module.exports = {
         return `[${month}/${day}/${year} ${hours}:${minutes}:${seconds}] `
     },
     writeLog: (toWrite) => {
-        if (DEBUG) return console.log(toWrite)
+        const logTime = utility.getOutputTime()
+        if (DEBUG) return console.log(`${logTime} ${toWrite}`)
         else
         {
-            const logTime = utility.getOutputTime()
-            let content = ''
             dfs.readFile(`/Musicious/log.txt`, { encoding: 'utf8'}, (err, res) => {
+                let content = ''
                 if (err) content = `${logTime} ${toWrite}`
                 else content = `${res}\n${logTime} ${toWrite}`
                 dfs.writeFile(`/Musicious/log.txt`, content, {encoding: 'utf8'}, (err, stat) => {
