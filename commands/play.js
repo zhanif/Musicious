@@ -6,7 +6,7 @@ module.exports = {
     description: 'Play a song or playlist from url. If the bot is currently playing a song, the result is added to the queue.',
     permission: {
         user: [],
-        bot: ['CONNECT', 'SPEAK']
+        bot: ['CONNECT', 'SPEAK', 'VIEW_CHANNEL']
     },
     dev_only: false,
     min_args: 1,

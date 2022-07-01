@@ -20,42 +20,43 @@ module.exports = {
             if (command.reqVoice && !message.member.voice.channel) return message.channel.send(`You must join the voice channel first!`)
             if (command.reqVoice && message.guild.me.voice.channel && message.guild.me.voice.channel != message.member.voice.channel) return message.channel.send(`You must join the same voice channel first!`)
             if (command.min_args > args.length) return message.channel.send(`Incomplete arguments, please try again!`)
-            if (
-                command.permission.user.length == 0 ||
-                command.permission.bot.length == 0 ||
-                message.member.hasPermission(command.permission.user) ||
-                message.guild.me.hasPermission(command.permission.bot) ||
-                message.author.id == client.dev_id
-            )
+            noPerm = false
+            if (command.permission.user.length > 0 || command.permission.bot.length > 0)
             {
+                command.permission.user.forEach(p => {
+                    if (!message.member.permissions.has(p)) noPerm = true
+                })
+                command.permission.bot.forEach(p => {
+                    if (!message.guild.me.permissions.has(p)) noPerm = true
+                })
+            }
+            if (!noPerm) {
                 if (command.dev_only && message.author.id != client.dev_id) return
                 if (command.dev_only) writeLog(`Warn: Developer command (${command.name}) has been used by ${message.author.tag} (ID: ${message.author.id})!`)
                 return command.run(client, message, args)
             }
-            else
+            // Invalid permission
+            let perm = []
+            let missingInfo = `You don't have the following permission`
+            command.permission.user.forEach(p => {
+                if (!message.member.permissions.has(p)) perm.push(`\`${p}\``)
+            })
+            if (perm.length > 0)
             {
-                // Invalid permission
-                let perm = []
-                let missingInfo = `You don't have the following permission`
-                command.permission.user.forEach(p => {
-                    if (!message.member.permissions.has(p)) perm.push(`\`${p}\``)
-                })
-                if (perm.length > 0)
-                {
-                    missingInfo += `${(perm.length == 1) ? '' : 's'}: ${perm.join(', ')}`
-                    return message.channel.send(missingInfo)
-                }
+                missingInfo += `${(perm.length == 1) ? '' : 's'}: ${perm.join(', ')}`
+                return message.channel.send(missingInfo)
+            }
 
-                while (perm.length > 0) { perm.pop() }
-                missingInfo = `I don't have the following permission`
-                command.permission.bot.forEach((p) => {
-                    if (!message.guild.me.permissions.has(p)) permBot.push(`\`${p}\``)
-                })
-                if (permBot.length > 0)
-                {
-                    missingInfo += `${(permBot.length == 1) ? '' : 's'}: ${permBot.join(', ')}`
-                    return message.channel.send(missingInfo)
-                }
+            while (perm.length > 0) { perm.pop() }
+            missingInfo = `I don't have the following permission`
+            command.permission.bot.forEach((p) => {
+                if (!message.guild.me.permissions.has(p)) permBot.push(`\`${p}\``)
+            })
+            console.log("OKE")
+            if (permBot.length > 0)
+            {
+                missingInfo += `${(permBot.length == 1) ? '' : 's'}: ${permBot.join(', ')}`
+                return message.channel.send(missingInfo)
             }
         }
         catch (err)

@@ -63,6 +63,7 @@ client.flushCache = async (queue, serverId) => {
                 id: serverId
             }
         }
+        if (!client.cacheServer.get(queue.id)) return
         let channelid = client.cacheServer.get(queue.id)[0]
         let msgid = client.cacheServer.get(queue.id)[1]
         let findMsg = await client.guilds.cache.get(queue.id).channels.fetch(channelid)
@@ -90,11 +91,12 @@ client.distube
                 componentType: 'BUTTON'
             })
 
-            console.log(emsg.id)
-
             client.cacheServer.set(queue.id, [emsg.channelId, emsg.id])
 
             collector.on('collect', async collected => {
+                if (!collected.member.voice.channel) {
+                    return collected.reply({content: `You must join the voice channel first!`, ephemeral: true})
+                }
                 if (
                     collected.customId == 'play'
                     || collected.customId == 'pause'
@@ -115,12 +117,12 @@ client.distube
                         queue.resume()
                     }
                     else if (collected.customId == 'repeat_off') {
-                        idx[1] = 2
-                        queue.setRepeatMode(1)
-                    }
-                    else if (collected.customId == 'repeat') {
                         idx[1] = 1
                         queue.setRepeatMode(2)
+                    }
+                    else if (collected.customId == 'repeat') {
+                        idx[1] = 2
+                        queue.setRepeatMode(1)
                     }
                     else if (collected.customId == 'repeat_one') {
                         idx[1] = 0
