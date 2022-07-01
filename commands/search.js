@@ -27,7 +27,7 @@ module.exports = {
                 type: 'video',
                 safeSearch: true,
             }).catch(() => {})
-            if (!searchRes) return message.channel.send(`No result found!`)
+            if (!searchRes) return message.channel.send(`🔍・No result found!`)
             let resStr = []
             searchRes.forEach((s, i) => {
                 resStr.push({
