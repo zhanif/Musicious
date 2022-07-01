@@ -101,12 +101,14 @@ module.exports = {
             })
             
             collector1.on('end', async (m, reason) => {
+                msg.edit({components: []})
                 setTimeout(() => {
                     msg.delete().catch(() => {})
                 }, 5000)
             })
 
             collector2.on('end', async (m, reason) => {
+                msg.edit({components: []})
                 setTimeout(() => {
                     msg.delete().catch(() => {})
                 }, 5000)
