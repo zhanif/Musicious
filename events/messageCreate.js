@@ -50,12 +50,11 @@ module.exports = {
             while (perm.length > 0) { perm.pop() }
             missingInfo = `I don't have the following permission`
             command.permission.bot.forEach((p) => {
-                if (!message.guild.me.permissions.has(p)) permBot.push(`\`${p}\``)
+                if (!message.guild.me.permissions.has(p)) perm.push(`\`${p}\``)
             })
-            console.log("OKE")
-            if (permBot.length > 0)
+            if (perm.length > 0)
             {
-                missingInfo += `${(permBot.length == 1) ? '' : 's'}: ${permBot.join(', ')}`
+                missingInfo += `${(perm.length == 1) ? '' : 's'}: ${perm.join(', ')}`
                 return message.channel.send(missingInfo)
             }
         }

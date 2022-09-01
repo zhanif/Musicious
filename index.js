@@ -224,5 +224,12 @@ function makeButtons(idx) {
 process.on("uncaughtException", err => writeLog(err));
 process.on("unhandledRejection", (err) => writeLog(err));
 
+client.on('debug', async (msg) => {
+  if (msg.indexOf('429') !== -1) {
+    process.kill(1, 'SIGINT')
+    process.exit(0)
+  }
+})
+
 client.login(client.token)
 keepAlive()
