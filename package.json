@@ -33,6 +33,7 @@
     "fs": "^0.0.1-security",
     "genius-lyrics": "^4.3.8",
     "libsodium-wrappers": "^0.7.9",
+    "mongoose": "^6.5.0",
     "node-gyp": "^8.4.1",
     "node-opus": "^0.3.3",
     "node-pre-gyp": "^0.17.0",
