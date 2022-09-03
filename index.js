@@ -5,6 +5,7 @@ const { SpotifyPlugin } = require('@distube/spotify')
 const { SoundCloudPlugin } = require('@distube/soundcloud')
 const { keepAlive } = require('./server')
 const fs = require('fs')
+const child_process = require('child_process')
 const { writeLog } = require('./logger')
 
 const client = new Client({
@@ -224,5 +225,20 @@ function makeButtons(idx) {
 process.on("uncaughtException", err => writeLog(err));
 process.on("unhandledRejection", (err) => writeLog(err));
 
+
+client.on('debug', async msg => {
+  console.log(msg)
+  //console.log(`info -> ${check429error}`); //debugger
+  if (msg.indexOf(`429`) > -1) {
+    writeLog(`Caught a 429 error!`); 
+    child_process.exec('kill 1', (err, output) => {
+        if (err) {
+            console.error("could not execute command: ", err);
+            return
+        }
+      console.log(`Kill 1 command succeeded`); //probably wont work
+    });
+  }
+})
 client.login(client.token)
 keepAlive()
