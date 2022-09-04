@@ -1,6 +1,4 @@
 const { Client, Message } = require("discord.js")
-const { writeLog } = require("../logger")
-
 module.exports = {
     name: 'ping',
     description: 'Check the bot\'s latency',
@@ -23,13 +21,13 @@ module.exports = {
             message.channel.send('Receiving...').then(msg => {
                 let createdAt = msg.createdAt - message.createdAt
                 let websocketAt = client.ws.ping
-                let editedMessage =  `:signal_strength: API: \`${createdAt}\` ms | WebSocket: \`${websocketAt}\` ms`
+                let editedMessage =  `📶・Latency: \`${createdAt}\` ms | API: \`${websocketAt}\` ms`
                 msg.edit(editedMessage)
             })
         }
         catch (err)
         {
-            writeLog(err)
+            client.writeLog(err)
         }
     }
 }

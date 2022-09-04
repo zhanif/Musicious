@@ -1,18 +1,22 @@
-const { Client, Message } = require("discord.js")
-const { writeLog } = require("../logger")
+const { Client, Message, PermissionsBitField } = require("discord.js")
 
 module.exports = {
     name: 'play',
     description: 'Play a song or playlist from url. If the bot is currently playing a song, the result is added to the queue.',
     permission: {
         user: [],
-        bot: ['CONNECT', 'SPEAK', 'VIEW_CHANNEL']
+        bot: [
+            PermissionsBitField.Flags.Connect,
+            PermissionsBitField.Flags.Speak,
+            PermissionsBitField.Flags.ViewChannel
+        ]
     },
     dev_only: false,
     min_args: 1,
     args: ['<song>'],
     reqVoice: true,
     aliases: ['p'],
+    cooldown: 3_000,
     /**
      * @param {Client} client
      * @param {Message} message
@@ -32,7 +36,7 @@ module.exports = {
         }
         catch (err)
         {
-            writeLog(err)
+            client.writeLog(err)
         }
     }
 }

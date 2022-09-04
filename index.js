@@ -1,244 +1,127 @@
 require('dotenv').config()
-const { Client, Collection, MessageActionRow, MessageButton } = require('discord.js')
-const { DisTube } = require('distube')
-const { SpotifyPlugin } = require('@distube/spotify')
-const { SoundCloudPlugin } = require('@distube/soundcloud')
-const { keepAlive } = require('./server')
+const {Client, Collection, GatewayIntentBits, Options, Partials} = require('discord.js')
 const fs = require('fs')
-const child_process = require('child_process')
-const { writeLog } = require('./logger')
+const mongoose = require('mongoose')
+const dfs = require('dropbox-fs')({
+    apiKey: process.env.DROPBOX_TOKEN
+})
 
 const client = new Client({
-    intents: 32767
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.MessageContent,
+    ],
+    partials: [
+        Partials.Channel,
+        Partials.Message,
+        Partials.User,
+        Partials.Reaction,
+    ],
+    makeCache: Options.cacheWithLimits({
+        BaseGuildEmojiManager: 0,
+        GuildBanManager: 0,
+        GuildInviteManager: 0,
+        GuildStickerManager: 0,
+        GuildEmojiManager: 0,
+        GuildScheduledEventManager: 0,
+        PresenceManager: 0,
+        StageInstanceManager: 0,
+        ThreadManager: 0,
+        ThreadMemberManager: 0,
+    })
 })
-client.commands = new Collection()
-client.interactions = new Collection();
-client.aliases = new Collection()
-client.prefix = process.env.PREFIX
-client.token = process.env.TOKEN
-client.dev_id = process.env.DEV_ID
-client.dev_guild = process.env.DEV_GUILD
-client.dev_channel = process.env.DEV_CHANNEL
-client.distube = new DisTube(client, {
-    leaveOnStop: false,
-    leaveOnEmpty: true,
-    emptyCooldown: 180, // 3 minutes of inactivity
-    emitNewSongOnly: true,
-    youtubeDL: false,
-    updateYouTubeDL: false,
-    youtubeCookie: process.env.YTCOOKIE,
-    plugins: [new SpotifyPlugin(), new SoundCloudPlugin()]
-})
-client.cacheServer = new Map()
 
-loadEvents = () => {
-    console.log(`Info: Loading event files ...`)
-    const eventFiles = fs.readdirSync('./events').filter(f => f.endsWith('.js'))
-    for (const eventFile of eventFiles)
-    {
-        const event = require(`./events/${eventFile}`)
+client.events = new Collection()
+client.commands = new Collection()
+client.aliases = new Collection()
+client.prefix = process.env.BOT_PREFIX
+
+client.writeLog = (msg) => {
+    return console.log(msg)
+    function getOutputTime() {
+        let options = {
+            timeZone: 'Asia/Jakarta',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: 'numeric',
+            hourCycle: 'h23',
+        }
+        const formatter = new Intl.DateTimeFormat([], options)
+        const strtime = formatter.format(new Date())
+        
+        let month = strtime[0] + strtime[1]
+        let day = strtime[3] + strtime[4]
+        let year = strtime[6] + strtime[7] + strtime[8] + strtime[9]
+        let hours = strtime[12] + strtime[13]
+        let minutes = strtime[15] + strtime[16]
+        let seconds = strtime[18] + strtime[19]
+        return `[${month}/${day}/${year} ${hours}:${minutes}:${seconds}] `
+    }
+
+    let time = getOutputTime()
+    dfs.readFile('/Musicious/log.txt', {encoding: 'utf8'}, (err, res) => {
+        let content = ''
+        if (err) content = `${time} ${msg}`
+        else content = `${res}\n${time} ${msg}`
+        // dfs.write('/Musicious/log.txt', content, {encoding: 'utf8'}, (err, stat) => {
+        //     if (err) console.log(`Error: ${err}`)
+        // })
+    })
+}
+
+client.loadEvents = () => {
+    console.log(`[INFO] Mounting events ...`)
+    const files = fs.readdirSync('./events').filter(f => f.endsWith('.js'))
+    for (let file of files) {
+        const event = require(`./events/${file}`)
         if (event.once) client.once(event.name, event.run.bind(undefined, client))
         else client.on(event.name, event.run.bind(undefined, client))
-        console.log(`Info: Event ready: ${event.name}`)
+        console.log(`[INFO] Event ready: ${event.name}`)
     }
 }
-loadCommands = () => {
-    console.log(`Info: Loading command files ...`)
-    const commandFiles = fs.readdirSync(`./commands`).filter(f => f.endsWith('.js'))
-    for (const commandFile of commandFiles)
-    {
-        const command = require(`./commands/${commandFile}`)
+client.loadCommands = () => {
+    console.log(`[INFO] Mounting commands ...`)
+    const files = fs.readdirSync(`./commands`).filter(f => f.endsWith('.js'))
+    files.forEach(file => {
+        const command = require(`./commands/${file}`)
         client.commands.set(command.name, command)
         if (command.aliases) command.aliases.forEach(alias => client.aliases.set(alias, command.name))
-        console.log(`Info: Command ready: ${commandFile}`)
-    }
+        console.log(`[INFO] Command ready: ${file}`)
+    })
 }
 
-loadEvents()
-loadCommands()
-
-client.flushCache = async (queue, serverId) => {
-    try {
-        if (!queue) {
-            queue = {
-                id: serverId
-            }
-        }
-        if (!client.cacheServer.get(queue.id)) return
-        let channelid = client.cacheServer.get(queue.id)[0]
-        let msgid = client.cacheServer.get(queue.id)[1]
-        let findMsg = await client.guilds.cache.get(queue.id).channels.fetch(channelid)
-        findMsg.messages.fetch(msgid).then(m => {
-            m.edit({content: m.content, components: []})
-            client.cacheServer.delete(queue.id)
-        })
-        .catch(err => {})
-    } catch (err) {
-        writeLog(err)
-    }
-}
-
-client.distube
-    .on('playSong', async (queue, song) => {
-        try
-        {
-            client.flushCache(queue, queue.id)
-            let idx = [0, 0, 0, 0, 0]
-
-            const row = makeButtons(idx)
-            let content = `🎶・\`${song.name}\` - ${song.formattedDuration}`
-            let emsg = await queue.textChannel.send({content: content, components: [row]})
-            const collector = queue.textChannel.createMessageComponentCollector({
-                componentType: 'BUTTON'
-            })
-
-            client.cacheServer.set(queue.id, [emsg.channelId, emsg.id])
-
-            collector.on('collect', async collected => {
-                if (!collected.member.voice.channel) {
-                    return collected.reply({content: `You must join the voice channel first!`, ephemeral: true})
-                }
-                if (
-                    collected.customId == 'play'
-                    || collected.customId == 'pause'
-                    || collected.customId == 'repeat_off'
-                    || collected.customId == 'repeat_one'
-                    || collected.customId == 'repeat'
-                    || collected.customId == 'stop'
-                ) {
-                    await collected.deferUpdate()
-                    if (collected.customId == 'play')
-                    {
-                        idx[2] = 1
-                        queue.pause()
-                    }
-                    else if (collected.customId == 'pause')
-                    {
-                        idx[2] = 0
-                        queue.resume()
-                    }
-                    else if (collected.customId == 'repeat_off') {
-                        idx[1] = 1
-                        queue.setRepeatMode(2)
-                    }
-                    else if (collected.customId == 'repeat') {
-                        idx[1] = 2
-                        queue.setRepeatMode(1)
-                    }
-                    else if (collected.customId == 'repeat_one') {
-                        idx[1] = 0
-                        queue.setRepeatMode(0)
-                    }
-                    else if (collected.customId == 'stop')
-                    {
-                        idx[3] = 1
-                        queue.stop()
-                    }
-                    let rechannelid = client.cacheServer.get(queue.id)[0]
-                    let remsgid = client.cacheServer.get(queue.id)[1]
-                    let refindMsg = await client.guilds.cache.get(queue.id).channels.fetch(rechannelid)
-                    refindMsg.messages.fetch(remsgid).then(m => {
-                        m.edit({content: content, components: [makeButtons(idx)]})
-                    })
-                }
-                else if (collected.customId == 'prev')
-                {
-                    await collected.deferReply({ephemeral: true})
-                    if (!queue) return collected.editReply(`The queue is empty!`)
-                    if (queue.previousSongs.length == 0) return collected.editReply(`No previous song found!`)
-                    await collector.stop()
-                    await queue.previous()
-                }
-                else if (collected.customId == 'next')
-                {
-                    if (!queue) return collected.editReply(`The queue is empty!`)
-                    if (queue.songs.length - 1 <= 0) return collected.editReply(`No next song found!`)
-                    await collector.stop()
-                    await queue.skip()
-                }
-                else if (collected.customId == 'leave')
-                {
-                    await client.distube.voices.leave(emsg.guild)
-                    await collector.stop()
-                }
-                
-            })
-
-            collector.on('end', async collected => {
-                await emsg.edit({content: emsg.content, components: []}).catch(err => {})
-            })
-        }
-        catch (err)
-        {
-            writeLog(err)
-        }
-    })
-    .on('addList', (queue, playlist) => {
-        queue.textChannel.send({content: `🔥・Playlist \`${playlist.name}\` has been loaded`}).catch(() => {})
-    })
-    .on('searchNoResult', (message, query) => {
-        message.channel.send({content: `🔎・No result found`}).catch(() => {})
-    })
-    .on('error', (channel, err) => {
-        channel.send('\`\`\`diff\n- Error:\n' + err.message.replace('`', '') + '\n\`\`\`').catch(() => {})
-        writeLog(err)
-    })
-
-function makeButtons(idx) {
-    let btn_prev = [{value: 'prev', emoji: '⏮', style: 'SECONDARY'}]
-    let btn_repeat = [{value:'repeat_off', emoji: '🔁', style:'SECONDARY'}, {value: 'repeat', emoji: '🔁', style:'SUCCESS'}, {value: 'repeat_one', emoji: '🔂', style:'SUCCESS'}]
-    let btn_play = [{value: 'play', emoji: '⏸', style:'SECONDARY'}, {value: 'pause', emoji: '▶', style:'PRIMARY'}]
-    let btn_stop = [{value: 'stop', emoji: '⏹', style:'SECONDARY'}, {value: 'leave', emoji: '👋', style:'DANGER'}]
-    let btn_next = [{value: 'next', emoji: '⏭', style: 'SECONDARY'}]
-
-    let isDisable = false
-    if (idx[3] == 1) isDisable = true
-
-    return new MessageActionRow()
-    .addComponents(
-        new MessageButton()
-        .setStyle(btn_prev[idx[0]].style)
-        .setCustomId(btn_prev[idx[0]].value)
-        .setEmoji(btn_prev[idx[0]].emoji)
-        .setDisabled(isDisable),
-        new MessageButton()
-        .setStyle(btn_repeat[idx[1]].style)
-        .setCustomId(btn_repeat[idx[1]].value)
-        .setEmoji(btn_repeat[idx[1]].emoji),
-        new MessageButton()
-        .setStyle(btn_play[idx[2]].style)
-        .setCustomId(btn_play[idx[2]].value)
-        .setEmoji(btn_play[idx[2]].emoji)
-        .setDisabled(isDisable),
-        new MessageButton()
-        .setStyle(btn_stop[idx[3]].style)
-        .setCustomId(btn_stop[idx[3]].value)
-        .setEmoji(btn_stop[idx[3]].emoji),
-        new MessageButton()
-        .setStyle(btn_next[idx[4]].style)
-        .setCustomId(btn_next[idx[4]].value)
-        .setEmoji(btn_next[idx[4]].emoji)
-        .setDisabled(isDisable)
-    )
-}
-
-process.on("uncaughtException", err => writeLog(err));
-process.on("unhandledRejection", (err) => writeLog(err));
-
-
-client.on('debug', async msg => {
-  console.log(msg)
-  //console.log(`info -> ${check429error}`); //debugger
-  if (msg.indexOf(`429`) > -1) {
-    writeLog(`Caught a 429 error!`); 
-    child_process.exec('kill 1', (err, output) => {
-        if (err) {
-            console.error("could not execute command: ", err);
-            return
-        }
-      console.log(`Kill 1 command succeeded`); //probably wont work
-    });
-  }
+client.rest.on('rateLimited', async msg => {
+    client.writeLog(msg)
 })
-client.login(client.token)
-keepAlive()
+
+process.on('unhandledRejection', (reason, promise) => {
+    client.writeLog(reason)
+})
+  
+process.on('uncaughtException', (err, origin) => {
+    client.writeLog(err)
+})
+  
+process.on('uncaughtExceptionMonitor', (err, origin) => {
+    client.writeLog(err)
+})
+
+mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_ADDRESS}/${process.env.DB_NAME}?retryWrites=true&w=majority`, {})
+.then(() => {
+    console.log(`[INFO] Successfully connected into the database!`)
+})
+.catch((err) => {
+    console.log(`[ERROR] Unable to connect to the database! ${err}`)
+})
+
+client.loadEvents()
+client.loadCommands()
+client.login(process.env.BOT_TOKEN)

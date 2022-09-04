@@ -1,5 +1,5 @@
-const { Client } = require("discord.js")
-const { writeLog } = require("../logger")
+const { Client, ActivityType } = require("discord.js")
+const Cooldown = require('../schemas/cooldown')
 
 module.exports = {
     name: 'ready',
@@ -13,14 +13,15 @@ module.exports = {
             let guildCount = client.guilds.cache.size
             await client.user.setStatus('online')
             await client.user.setActivity({
-                name: `${client.prefix}help | ${guildCount} server${guildCount > 1? 's' : ''}`,
-                type: 'LISTENING'
+                name: `${client.prefix}help | ${guildCount} servers`,
+                type: ActivityType.Watching
             })
-            console.log(`Info: ${client.user.tag} is online!`)
+            await Cooldown.deleteMany({time: {$lt: new Date().getTime() - 60_000}})
+            console.log(`[INFO] ${client.user.tag} is online!`)
         }
         catch (err)
         {
-            writeLog(err)
+            client.writeLog(err)
         }
     }
 }
